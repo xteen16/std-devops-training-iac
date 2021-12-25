@@ -15,6 +15,33 @@ locals {
   }
 }
 
+output "vpc_name" {
+  value = module.vpc.name
+}
+
+output "vpc_id" {
+  value = module.vpc.id
+}
+
+output "vpc_cidr" {
+  value = module.vpc.cidr_block
+}
+
+output "subnet_groups" {
+  value = {
+    public  = module.subnet_group__public
+    private = module.subnet_group__private
+  }
+}
+
+// output "publci_subnet_group" {
+//   value = module.subnet_group__public
+// }
+
+// output "private_subnet_group" {
+//   value = module.subnet_group__private
+// }
+
 module "vpc" {
   # moudle source 와 버전을 명시한다.
   source  = "tedilabs/network/aws//modules/vpc"

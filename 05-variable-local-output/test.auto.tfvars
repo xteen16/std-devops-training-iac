@@ -1,2 +1,2 @@
 # terraform apply
-vpc_name="test"
+vpc_name = "test"

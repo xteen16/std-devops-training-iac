@@ -2,7 +2,11 @@ provider "aws" {
   region = "ap-northeast-2"
 }
 
-variable "vpc_name" {}
+variable "vpc_name" {
+  description = "생성되는 vpc 이름"
+  type        = string
+  default     = "default"
+}
 
 module "vpc" {
   # moudle source 와 버전을 명시한다.

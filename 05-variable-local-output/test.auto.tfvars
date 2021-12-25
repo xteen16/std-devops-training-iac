@@ -1,2 +1,2 @@
-# terraform apply -var-file=test.tfvars
+# terraform apply
 vpc_name="test"

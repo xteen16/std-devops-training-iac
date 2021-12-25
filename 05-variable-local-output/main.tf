@@ -16,18 +16,23 @@ locals {
 }
 
 output "vpc_name" {
-  value = module.vpc.name
+  description = "생성된 vpc 의 이름"
+  value       = module.vpc.name
 }
 
 output "vpc_id" {
-  value = module.vpc.id
+  description = "생성된 vpc 의 id"
+  value       = module.vpc.id
 }
 
 output "vpc_cidr" {
-  value = module.vpc.cidr_block
+  description = "생성된 vpc 의 cidr 영역"
+  value       = module.vpc.cidr_block
 }
 
 output "subnet_groups" {
+  description = "생성된 vpc 의 subnet group 정보"
+  
   value = {
     public  = module.subnet_group__public
     private = module.subnet_group__private

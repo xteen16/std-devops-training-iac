@@ -28,6 +28,8 @@ output "user_arns" {
 /*
  * count
  */
+
+ # ** count 의 중간 인덱스를 삭제하면 하위 인덱스가 shift 됨 **
 resource "aws_iam_user" "count" {
   count = 10
 

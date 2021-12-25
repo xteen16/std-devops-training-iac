@@ -48,7 +48,7 @@ module "subnet_group__private" {
   source  = "tedilabs/network/aws//modules/subnet-group"
   version = "0.24.0"
 
-  name                    = "${module.vpc.name}-private}"
+  name                    = "${module.vpc.name}-private"
   vpc_id                  = module.vpc.id
   map_public_ip_on_launch = false
 

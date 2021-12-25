@@ -51,7 +51,7 @@ resource "aws_iam_user" "for_each_set" {
     "for-each-set-user-3"
   ])
 
-  name = each.key 
+  name = each.key
 }
 
 output "for_each_set_user_arns" {
@@ -60,4 +60,31 @@ output "for_each_set_user_arns" {
   # 따라서 values 함수를 통해 value 만 가져와서 arn 을 획득해야함
   # values 함수를 타면 object list 가 반환됨
   value = values(aws_iam_user.for_each_set).*.arn
+}
+
+resource "aws_iam_user" "for_each_map" {
+  # map 형을 통해 iam user 생성
+  # map 의 key 는 항상 string
+  for_each = {
+    alice = {
+      level   = "low"
+      manager = "padella"
+    }
+    bob = {
+      level   = "mid"
+      manager = "padella"
+    }
+    john = {
+      level   = "high"
+      manager = "steve"
+    }
+  }
+
+  name = each.key
+
+  tags = each.value
+}
+
+output "for_each_map_user_arns" {
+  value = values(aws_iam_user.for_each_map).*.arn
 }

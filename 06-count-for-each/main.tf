@@ -37,3 +37,27 @@ resource "aws_iam_user" "count" {
 output "count_user_arns" {
   value = aws_iam_user.count.*.arn
 }
+
+/*
+ * for_each
+ */
+resource "aws_iam_user" "for_each_set" {
+  # toset 을 통해 list 를 set 으로 형변환
+  # for_each 를 사용하면 each.key, each.value 를 사용할 수 있음
+  # set 형은 key, value 다 동일한 값임
+  for_each = toset([
+    "for-each-set-user-1",
+    "for-each-set-user-2",
+    "for-each-set-user-3"
+  ])
+
+  name = each.key 
+}
+
+output "for_each_set_user_arns" {
+  # 위에서 작성한 for_each_set 의 결과는 다음과 같음
+  # {for_each_ser-user-1 = {**object**}, ...}
+  # 따라서 values 함수를 통해 value 만 가져와서 arn 을 획득해야함
+  # values 함수를 타면 object list 가 반환됨
+  value = values(aws_iam_user.for_each_set).*.arn
+}

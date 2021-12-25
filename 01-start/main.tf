@@ -33,3 +33,10 @@ resource "aws_vpc" "foo" {
 output "vpc_foo" {
   value = aws_vpc.foo
 }
+
+# data source 의 aws_vpcs 는 vpc 의 목록을 가져온다.
+data "aws_vpcs" "this" {}
+
+output "vpcs" {
+  value = data.aws_vpcs.this
+}

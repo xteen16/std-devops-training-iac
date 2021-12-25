@@ -8,6 +8,13 @@ variable "vpc_name" {
   default     = "default"
 }
 
+locals {
+  common_tags = {
+    Project = "Network"
+    Owner   = "padella"
+  }
+}
+
 module "vpc" {
   # moudle source 와 버전을 명시한다.
   source  = "tedilabs/network/aws//modules/vpc"
@@ -23,7 +30,7 @@ module "vpc" {
   dns_hostnames_enabled = true
   dns_support_enabled   = true
 
-  tags = {}
+  tags = local.common_tags
 }
 
 # vpc 내 public subnet 생성
@@ -46,7 +53,7 @@ module "subnet_group__public" {
     }
   }
 
-  tags = {}
+  tags = local.common_tags
 }
 
 # vpc 내 private subnet 생성
@@ -69,7 +76,7 @@ module "subnet_group__private" {
     }
   }
 
-  tags = {}
+  tags = local.common_tags
 }
 
 # public subnet 에 대한 routing table 정의
@@ -90,7 +97,7 @@ module "route_table__public" {
     },
   ]
 
-  tags = {}
+  tags = local.common_tags
 }
 
 # private subnet 에 대한 routing table 정의
@@ -106,5 +113,5 @@ module "route_table__private" {
 
   ipv4_routes = []
 
-  tags = {}
+  tags = local.common_tags
 }

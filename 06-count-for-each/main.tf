@@ -24,3 +24,16 @@ output "user_arns" {
     aws_iam_user.user_3.arn
   ]
 }
+
+/*
+ * count
+ */
+resource "aws_iam_user" "count" {
+  count = 10
+
+  name = "count-user-${count.index}"
+}
+
+output "count_user_arns" {
+  value = aws_iam_user.count.*.arn
+}

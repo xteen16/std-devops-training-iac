@@ -1,5 +1,9 @@
 terraform {
   # token 은 local 의 ~/.terraformrc 파일에 넣어두면 됨
+  # terraform state 관련 명령어 잘 알아둘 것
+  # list, mv rm ....
+  # mv 같은 경우는 refect 과정 등에서 유용하게 사용
+  # pull, push 는 remote-state 를 사용하는 경우 유용하게 사용할 수 있음
   backend "remote" {
     hostname     = "app.terraform.io"
     organization = "1test111"

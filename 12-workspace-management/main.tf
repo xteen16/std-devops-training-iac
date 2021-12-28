@@ -15,12 +15,16 @@ locals {
 }
 
 output "vpc_name" {
-  value = module.vpc_name
+  value = module.vpc.name
+}
+
+output "vpc_id" {
+  value = module.vpc.id
 }
 
 output "vpc_cidr" {
   description = "생성된 VPC의 CIDR 영역"
-  value       = module.vpc.cidr_block
+  value = module.vpc.cidr_block
 }
 
 output "subnet_groups" {
@@ -34,8 +38,8 @@ module "vpc" {
   source  = "tedilabs/network/aws//modules/vpc"
   version = "0.24.0"
 
-  name       = var.vpc_name
-  cidr_block = "10.0.0.0/16"
+  name                  = var.vpc_name
+  cidr_block            = "10.0.0.0/16"
 
   internet_gateway_enabled = true
 
@@ -49,8 +53,8 @@ module "subnet_group__public" {
   source  = "tedilabs/network/aws//modules/subnet-group"
   version = "0.24.0"
 
-  name                    = "${module.vpc_name}-public"
-  vpc_id                  = module.vpc_id
+  name                    = "${module.vpc.name}-public"
+  vpc_id                  = module.vpc.id
   map_public_ip_on_launch = true
 
   subnets = {

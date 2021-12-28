@@ -8,7 +8,7 @@ variable "vpc_name" {
 }
 
 locals {
-  common_tage = {
+  common_tags = {
     Project = "Network"
     Owner   = "padella"
   }
@@ -42,7 +42,7 @@ module "vpc" {
   dns_hostnames_enabled = true
   dns_support_enabled   = true
 
-  tags = local.common_tage
+  tags = local.common_tags
 }
 
 module "subnet_group__public" {

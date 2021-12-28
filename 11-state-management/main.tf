@@ -72,19 +72,19 @@ locals {
   ]
 }
 
-resource "aws_iam_user_policy_attachment" "developer" {
-  for_each = {
-    for user in local.developers :
-    user.name => user
-  }
+// resource "aws_iam_user_policy_attachment" "developer" {
+//   for_each = {
+//     for user in local.developers :
+//     user.name => user
+//   }
 
-  user       = each.key
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+//   user       = each.key
+//   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 
-  depends_on = [
-    aws_iam_user.this
-  ]
-}
+//   depends_on = [
+//     aws_iam_user.this
+//   ]
+// }
 
 output "developers" {
   value = local.developers

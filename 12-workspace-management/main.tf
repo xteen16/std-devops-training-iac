@@ -4,13 +4,13 @@ provider "aws" {
 
 variable "vpc_name" {
   description = "생성되는 VPC의 이름"
-  type = string
+  type        = string
 }
 
 locals {
   common_tage = {
     Project = "Network"
-    Owner = "padella"
+    Owner   = "padella"
   }
 }
 
@@ -20,37 +20,37 @@ output "vpc_name" {
 
 output "vpc_cidr" {
   description = "생성된 VPC의 CIDR 영역"
-  value = module.vpc.cidr_block
+  value       = module.vpc.cidr_block
 }
 
 output "subnet_groups" {
   value = {
-    public = module.subnet_group__public
+    public  = module.subnet_group__public
     private = module.subnet_group__private
   }
 }
 
 module "vpc" {
-  source = "tedilabs/network/aws//modules/vpc"
+  source  = "tedilabs/network/aws//modules/vpc"
   version = "0.24.0"
 
-  name = var.vpc_name
+  name       = var.vpc_name
   cidr_block = "10.0.0.0/16"
 
   internet_gateway_enabled = true
 
   dns_hostnames_enabled = true
-  dns_support_enabled = true
+  dns_support_enabled   = true
 
   tags = local.common_tage
 }
 
 module "subnet_group__public" {
-  source = "tedilabs/network/aws//modules/subnet-group"
+  source  = "tedilabs/network/aws//modules/subnet-group"
   version = "0.24.0"
 
-  name = "${module.vpc_name}-public"
-  vpc_id = module.vpc_id
+  name                    = "${module.vpc_name}-public"
+  vpc_id                  = module.vpc_id
   map_public_ip_on_launch = true
 
   subnets = {

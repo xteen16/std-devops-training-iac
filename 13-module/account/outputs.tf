@@ -3,7 +3,7 @@ output "id" {
   value       = data.aws_caller_identity.this.account_id
 }
 
-output "main" {
+output "name" {
   description = "Name of the AWS account. The account alias."
   value       = aws_iam_account_alias.this.account_alias
 }

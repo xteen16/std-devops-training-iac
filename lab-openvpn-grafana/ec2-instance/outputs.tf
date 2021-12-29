@@ -9,9 +9,9 @@ output "openvpn_instance" {
 
 output "private_instance" {
   value = {
-    public_ip   = aws_instance.private.public_ip
-    public_dns  = aws_instance.private.public_dns
-    private_ip  = aws_instance.private.private_ip
-    private_dns = aws_instance.private.private_dns
+    public_ip   = aws_instance.grafana.public_ip
+    public_dns  = aws_instance.grafana.public_dns
+    private_ip  = aws_instance.grafana.private_ip
+    private_dns = aws_instance.grafana.private_dns
   }
 }

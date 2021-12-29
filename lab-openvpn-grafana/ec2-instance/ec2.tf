@@ -1,9 +1,14 @@
-data "aws_ami" "ubuntu" {
+data "aws_ami" "fastcampus" {
+  for_each = toset([
+    "openvpn",
+    "grafana"
+  ])
+
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["ubuntu/20.04/amd64/${each.key}-*"]
   }
 
   filter {
@@ -11,21 +16,22 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  owners = ["self"]
 }
 
-resource "aws_instance" "private" {
-  ami           = data.aws_ami.ubuntu.image_id
+resource "aws_instance" "grafana" {
+  ami           = data.aws_ami.fastcampus["grafana"].image_id
   instance_type = "t2.micro"
   subnet_id     = local.subnet_groups["private"].ids[0]
   key_name      = "fastcampus"
 
   vpc_security_group_ids = [
     module.sg__ssh.id,
+    module.sg__grafana.id,
   ]
 
   tags = {
-    Name = "${local.vpc.name}-private"
+    Name = "${local.vpc.name}-grafana"
   }
 }
 
@@ -40,7 +46,7 @@ locals {
 }
 
 resource "aws_instance" "openvpn" {
-  ami           = data.aws_ami.ubuntu.image_id
+  ami           = data.aws_ami.fastcampus["openvpn"].image_id
   instance_type = "t2.micro"
   subnet_id     = local.subnet_groups["public"].ids[0]
   key_name      = "fastcampus"
@@ -55,5 +61,11 @@ resource "aws_instance" "openvpn" {
 
   tags = {
     Name = "${local.vpc.name}-openvpn"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      associate_public_ip_address,
+    ]
   }
 }

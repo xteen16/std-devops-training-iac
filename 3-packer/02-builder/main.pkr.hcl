@@ -8,3 +8,15 @@ build {
     "source.null.two",
   ]
 }
+
+/*
+ * With Name
+ */
+build {
+  name = "fastcampus-packer"
+
+  source = [
+    "source.null.one",
+    "source.null.two",
+  ]
+}

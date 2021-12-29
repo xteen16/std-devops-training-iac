@@ -15,7 +15,7 @@ build {
 build {
   name = "fastcampus-packer"
 
-  source = [
+  sources = [
     "source.null.one",
     "source.null.two",
   ]

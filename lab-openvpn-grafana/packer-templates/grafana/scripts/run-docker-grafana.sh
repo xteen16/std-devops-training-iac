@@ -8,6 +8,6 @@ GRAFANA_VERSION=8.2.0
 docker run \
   -d \
   -p 3000:3000 \
-  --restart unless-stopped \ # ec2가 재 시작 되더라도 항상 실행
+  --restart unless-stopped \
   --name=grafana \
   grafana/grafana:$GRAFANA_VERSION

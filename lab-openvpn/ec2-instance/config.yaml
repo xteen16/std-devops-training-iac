@@ -1,0 +1,6 @@
+context: {}
+
+remote_states:
+  "network":
+    organization: "1test111"
+    workspace: "tf-cloud-backend"

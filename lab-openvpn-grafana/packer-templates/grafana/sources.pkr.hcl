@@ -54,7 +54,7 @@ source "amazon-ebs" "ubuntu" {
       "Name" = "packer-build/${local.ami_name}"
     }
   )
-  
+
   # ami 에 붙는 태그
   tags = merge(
     local.source_tags,

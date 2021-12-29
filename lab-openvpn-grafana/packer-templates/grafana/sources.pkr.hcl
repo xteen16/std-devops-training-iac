@@ -33,7 +33,7 @@ locals {
     "build.packer.io/os"         = "ubuntu"
     "build.packer.io/os-version" = "20.04"
     "build.packer.io/region"     = "{{ .BuildRegion }}"
-    "build.packer.io/create-at"  = local.create_at
+    "build.packer.io/created-at" = local.create_at
   }
 }
 

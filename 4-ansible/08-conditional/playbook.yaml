@@ -25,11 +25,19 @@
         enabled: false
   tasks:
     # Docs: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html
-    - name: "Create a user if enabled in Amazon Linux"
-      user:
-        name: "{{ item.name }}"
-        shell: "{{ item.shell }}"
-        comment: "FastCampus DevOps"
-        state: "present"
-      loop: "{{ users }}"
-      when: item.enabled and (ansible_facts["distribution"] == "Amazon") # ansible_facts["describution"] 은 운영체제 배포판 종류를 의미
+    # - name: "Create a user if enabled in Amazon Linux"
+    #   user:
+    #     name: "{{ item.name }}"
+    #     shell: "{{ item.shell }}"
+    #     comment: "FastCampus DevOps"
+    #     state: "present"
+    #   loop: "{{ users }}"
+    #   when: item.enabled and (ansible_facts["distribution"] == "Amazon") # ansible_facts["describution"] 은 운영체제 배포판 종류를 의미
+
+    - name: "Show items between 10 ans 100"
+      debug:
+        var: item
+      loop: [0, 192, 154, 456, 7, 2, -1, 56, 234]
+      when:
+      - item >= 10
+      - item <= 100

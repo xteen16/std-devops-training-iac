@@ -49,25 +49,34 @@
     #   when:
     #   - (item < 10) or (item > 100)
 
-    - name: "Install Packages on Ubuntu"
-      apt:
-        name: "{{ item }}"
-        update_cache: true
-        state: "present"
-      loop:
-      - git
-      - curl
-      - htop
-      when:
-      - ansible_facts['distribution'] == 'Ubuntu'
+    # - name: "Install Packages on Ubuntu"
+    #   apt:
+    #     name: "{{ item }}"
+    #     update_cache: true
+    #     state: "present"
+    #   loop:
+    #   - git
+    #   - curl
+    #   - htop
+    #   when:
+    #   - ansible_facts['distribution'] == 'Ubuntu'
 
-    - name: "Install Packages on Amazon Linux"
-      yum:
-        name: "{{ item }}"
-        state: "present"
-      loop:
-      - git
-      - curl
-      - htop
-      when:
-      - ansible_facts['distribution'] == 'Amazon'
+    # - name: "Install Packages on Amazon Linux"
+    #   yum:
+    #     name: "{{ item }}"
+    #     state: "present"
+    #   loop:
+    #   - git
+    #   - curl
+    #   - htop
+    #   when:
+    #   - ansible_facts['distribution'] == 'Amazon'
+
+    - name: "Print users"
+      command: "cut -d: -f1 /etc/passwd"
+      register: users # 출력값을 users 변수에 담음
+
+    - name: "Is there claud"
+      debug:
+        msg: "There is no claud"
+      when: users.stdout.find("claud") == -1

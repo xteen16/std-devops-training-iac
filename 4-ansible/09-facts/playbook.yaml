@@ -1,0 +1,39 @@
+---
+
+- name: Prepare Amazon Linux
+  hosts: amazon
+  become: true
+  # remote system 의 facts 를 수집하지 않을 때 사용
+  # ex)
+  # - 대규모 시스템 관리 시 성능 향상을 위해 > facts 를 수집하는건 cost 가 크다
+  # - 실험적인 환경에서 앤서블 사용 준비 환경 
+  gather_facts: false
+  tasks:
+    # Docs: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html
+    - name: "Install python on Amazon Linux"
+      yum:
+        name: "python3"
+        state: "present"
+
+- name: Prepare Ubuntu
+  hosts: ubuntu
+  become: true
+  gather_facts: false
+  tasks:
+    - name: "Install python on Ubuntu"
+      apt:
+        name: "python3"
+        state: "present"
+        update_cache: true
+
+- name: Debug
+  hosts: all
+  become: true
+  tasks:
+    # Docs: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html
+    - name: "Debug Ansible facts"
+      debug:
+        var: ansible_facts
+
+# ansible localhost -m setup 명령을 통해 facts 를 수집할 수 있음
+# -a "filter=ansible_distribution*" 옵션을 통해 원하는 facts 만 수집 가능함

@@ -41,3 +41,11 @@
       when:
       - item >= 10
       - item <= 100
+
+    - name: "Show items not between 10 and 100"
+      debug:
+        var: item
+      loop: [0, 192, 154, 456, 7, 2, -1, 56, 234]
+      when:
+      - (item < 10) or (item > 100)
+      

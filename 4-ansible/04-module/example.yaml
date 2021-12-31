@@ -1,0 +1,57 @@
+---
+
+- name: Example
+  hosts: ubuntu
+  become: true
+  tasks:
+    # Docs: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html
+    # 리눅스 사용자 관련 모듈
+    - name: "Create a user"
+      user: "name=fastcampus shell=/bin/bash"
+
+    - name: "Hello World"
+      command: "echo 'Hello World!'"
+
+    # Docs: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html
+
+    - name: "Add DNS server to resolv.conf"
+      # 설정 파일을 관리하는 모듈
+      # 모듈에 args 를 전달하는 방식은 두 가지가 있다
+      # 1. 위 유저 모듈과 같이
+      # 2. 아래와 같이
+      lineinfile:
+        path: /etc/resolv.conf
+        line: 'nameserver 8.8.8.8'
+
+    # Docs: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+    - name: "Install Nginx"
+      apt:
+        name: nginx
+        state: present
+        update_cache: true
+
+    # Docs: https://docs.ansible.com/ansible/latest/collections/ansible/posix/synchronize_module.html
+    - name: "Upload web directory"
+      # 로컬 디렉토리와 retmote 디렉토리의 sync 를 맞춰주는 모듈
+      synchronize:
+        src: files/html/
+        dest: /var/www/html
+        archive: true
+        checksum: true
+        recursive: true
+        delete: true
+
+    # Docs: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+    - name: "Copy nginx configuration file"
+      copy:
+        src: files/default
+        dest: /etc/nginx/sites-enabled/default
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+
+    # Docs: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/service_module.html
+    - name: "Ensure nginx service started"
+      service:
+        name: nginx
+        state: started

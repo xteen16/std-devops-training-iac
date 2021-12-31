@@ -1,3 +1,4 @@
+---
 # This is Ansible Playbook
 
 # 플레이북 (Playbook): YAML로 정의. 순서대로 정렬된 플레이(작업 목록) 절차.

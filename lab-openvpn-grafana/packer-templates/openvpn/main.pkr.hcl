@@ -7,33 +7,28 @@ build {
 
   provisioner "shell" {
     inline = [
+      "mkdir -m 755 -p /opt/ansible",
+      "chown -R ubuntu:ubuntu /opt/ansible",
       "cloud-init status --wait",
     ]
     execute_command = "sudo -S sh -c '{{ .Vars }} {{ .Path }}'"
   }
 
-  provisioner "file" {
-    source      = "${path.root}/files/run-docker-openvpn.sh"
-    destination = "/tmp/run-docker-openvpn.sh"
+  provisioner "ansible" {
+    playbook_file = "${path.root}/ansible/initialize.yaml"
+    ansible_env_vars = [
+      "ANSIBLE_HOST_KEY_CHECKING=False",
+    ]
+    ansible_ssh_extra_args = [
+      "-o ForwardAgent=yes",
+    ]
+    user = "ubuntu"
   }
 
-  provisioner "shell" {
-    inline = [
-      "mkdir -p /opt/openvpn",
-      "cp /tmp/run-docker-openvpn.sh /opt/openvpn/run-docker-openvpn.sh"
-    ]
-    execute_command = "sudo -S sh -c '{{ .Vars }} {{ .Path }}'"
-  }
-
-  provisioner "shell" {
-    scripts = [
-      "${path.root}/scripts/update-apt.sh",
-      "${path.root}/scripts/install-common-tools.sh",
-      "${path.root}/scripts/configure-locale.sh",
-      "${path.root}/scripts/install-docker.sh",
-      "${path.root}/scripts/clean-apt.sh",
-    ]
-    execute_command = "sudo -S sh -c '{{ .Vars }} {{ .Path }}'"
+  provisioner "ansible-local" {
+    playbook_file = "${path.root}/ansible/playbook.yaml"
+    staging_directory = "/opt/ansible/"
+    clean_staging_directory = false
   }
 
   post-processor "manifest" {

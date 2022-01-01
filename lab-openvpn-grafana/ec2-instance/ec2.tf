@@ -36,10 +36,6 @@ resource "aws_instance" "grafana" {
 }
 
 locals {
-  openvpn_userdata = templatefile("${path.module}/files/openvpn-userdata.sh", {
-    vpc_cidr  = local.vpc.cidr_block
-    public_ip = aws_eip.openvpn.public_ip
-  })
   common_tags = {
     "Project" = "openvpn"
   }
@@ -50,8 +46,6 @@ resource "aws_instance" "openvpn" {
   instance_type = "t2.micro"
   subnet_id     = local.subnet_groups["public"].ids[0]
   key_name      = "fastcampus"
-
-  user_data = local.openvpn_userdata
 
   associate_public_ip_address = false
   vpc_security_group_ids = [
@@ -67,5 +61,23 @@ resource "aws_instance" "openvpn" {
     ignore_changes = [
       associate_public_ip_address,
     ]
+  }
+}
+
+resource "null_resource" "provisioner" {
+  triggers = {
+    instance_id = aws_instance.openvpn.id
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "ansible-playbook /opt/ansible/playbook.yaml -e 'openvpn_create_client_config=true'"
+    ]
+
+    connection {
+      type = "ssh"
+      user = "ubuntu"
+      host = aws_eip.openvpn.public_ip
+    }
   }
 }

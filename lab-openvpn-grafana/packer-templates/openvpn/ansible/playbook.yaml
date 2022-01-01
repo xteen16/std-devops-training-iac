@@ -1,0 +1,125 @@
+---
+- name: "Ready to run OpenVPN"
+  hosts: localhost
+  become: true
+  vars:
+    openvpn_server_cn: "{{ ansible_ec2_public_ipv4 }}" # ec2 metadata 에서 ec2 instance 의 공인 ip 를 가져온다.
+
+  tasks:
+  - name: "Gather EC2 Instance Metadata"
+    amazon.aws.ec2_metadata_facts: {}
+
+  - name: "Set VPC CIDR"
+    set_fact:
+      vpc_cidr: "{{ (ansible_facts | dict2items | selectattr('key', 'match', '^ec2_network_interfaces_macs_.*_vpc_ipv4_cidr_blocks') | map(attribute='value'))[0] }}"
+
+  - name: "Set VPC facts"
+    set_fact:
+      vpc_dns_server: '{{ vpc_cidr | ipaddr(2) | ipaddr("address") }}'
+      vpc_network: '{{ vpc_cidr | ipaddr("network") }}'
+      vpc_netmask: '{{ vpc_cidr | ipaddr("netmask") }}'
+
+  - name: "Install common packages"
+    apt:
+      name: "{{ item }}"
+      state: latest
+    loop:
+    - build-essential
+    - software-properties-common
+    - htop
+    - jq
+    - wget
+    - curl
+    - git
+
+  - name: "Install required system packages for Docker"
+    apt:
+      name: "{{ item }}"
+      state: latest
+    loop:
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+
+  - name: Add Docker GPG apt Key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add docker repository to apt
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+      state: present
+
+  - name: Update apt and install docker-ce
+    apt:
+      name:
+      - docker-ce
+      - docker-ce-li
+      - containerd.io
+      state: latest
+      update_cache: true
+
+  - name: Add user to docker group
+    user:
+      name: "ubuntu"
+      groups: docker
+      append: true
+
+  - name: Install docker Python Package
+    pip:
+      name: docker
+      state: present
+
+  - name: Run OpenVPC container on Docker
+    communtiy.docker.docker_container:
+      name: openvpn
+      image: wheelybird/openvpc-ldap-otp:v1.4
+      # restart policy
+      # unless_stopped 의 경우 ec2 가 재시작 되어도 실행을 보장
+      # always 의 경우 재시작 하더라도 실행을 보장하지 않음
+      # openvpn 의 경우 cidr block 등이 변경되면 설정을 바꿔주어야 되기 때문에 always 를 사용
+      restart_policy: always
+      env:
+        OVPN_SERVER_CN: "{{ openvpn_server_cn }}"
+        OVPN_NETWORK: "172.22.16.0 255.255.240.0"
+        OVPN_ROUTES: "172.22.16.0 255.255.240.0, {{ vpc_network }} {{ vpc_netmask }}"
+        OVPN_DNS_SERVERS: "{{ vpc_dns_server }}"
+        OVPN_NAT: "true"
+        OVPN_ENABLE_COMPRESSION: "false"
+        USE_CLIENT_CERTIFICATE: "true"
+      ports:
+      - "1194:1194/udp"
+      capabilities:
+      - NET_ADMIN
+      volumes:
+      # 데이터 보존
+      - openvpn-data:/etc/openvpn
+      detach: true
+      container_default_behavior: compatibility
+      # ternary 함수는 입력값에 따른 조건분기
+      # state 가 present 인 경우 container 를 생성만 하고 실행하지 않음
+      # 추후 terraform 을 통해 ami 를 배포하면서 ansible 을 통해 다시 실행
+      state: "{{ openvpn_create_client_config | default(false) | ternary('started', 'present') }}"
+
+  - name: Get OpenVPN client configurations
+  # client 설정을 가져오는 부분
+  # docker exec 명령을 통해 ovpn 값을 가져옴
+    community.docker.docker_container_exec:
+      container: openvpn
+      command: show-client-config
+    register: result
+    until:
+    - result.rc == 0 # 성공할 경우
+    - '"END PRIVATE KEY" in result.stdout' # 출력에서 해당 문자열이 발견될 경우
+    retries: 100
+    delay: 10
+    when: openvpn_create_client_config | default(false)
+
+  - name: Save Client Configurations
+    # copy 모듈을 통해 ovpn 을 저장함.
+    copy:
+      content: "{{ result.stdout }}"
+      dest: /opt/fastcampus.ovpn
+    when: openvpn_create_client_config | default(false)

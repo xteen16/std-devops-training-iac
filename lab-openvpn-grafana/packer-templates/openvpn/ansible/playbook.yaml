@@ -75,7 +75,7 @@
   - name: Run OpenVPC container on Docker
     communtiy.docker.docker_container:
       name: openvpn
-      image: wheelybird/openvpc-ldap-otp:v1.4
+      image: wheelybird/openvpn-ldap-otp:v1.4
       # restart policy
       # unless_stopped 의 경우 ec2 가 재시작 되어도 실행을 보장
       # always 의 경우 재시작 하더라도 실행을 보장하지 않음

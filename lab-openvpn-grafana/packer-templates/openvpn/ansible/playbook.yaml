@@ -73,7 +73,7 @@
       state: present
 
   - name: Run OpenVPC container on Docker
-    communtiy.docker.docker_container:
+    community.docker.docker_container:
       name: openvpn
       image: wheelybird/openvpn-ldap-otp:v1.4
       # restart policy
